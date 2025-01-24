@@ -65,6 +65,8 @@ union Both {
 };
 
 Both b;
+b.e1.a=10.0;
+cout << b,e2.a;
 
 int main(){
     badFunction();
