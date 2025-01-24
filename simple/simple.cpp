@@ -49,6 +49,23 @@ L.a -> is an array of chars suitable for sending to another location or for writ
 char array and data structure in one
 */
 
+struct E1{
+    float a;
+    int b;
+};
+
+struct E2{
+    int b;
+    float a;
+};
+
+union Both {
+    E1 e1;
+    E2 e2;
+};
+
+Both b;
+
 int main(){
     badFunction();
     cout << "Hello World" << endl;
