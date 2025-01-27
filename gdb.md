@@ -7,3 +7,9 @@ bt to backtrace = what called what function called what function
 
 if seg fault = go into gdb and run
 then can bt
+
+list=look through code
+b 17 = break at line 17 
+p d = print variable d
+x /16bx p = show 16 bytes of memory starting at location p
+x /16bx &d = "" starting at location of variable d

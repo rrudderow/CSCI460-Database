@@ -12,7 +12,7 @@ ${EXE}: ${SRC}
 	g++ ${CFLAGS} $< -o $@
 
 clean:
-	rm ${EXE}
+	rm *.exe
 
 run: ${EXE}
 	./${EXE}

@@ -1,15 +1,22 @@
 #include <iostream>
 #include <cstring>
+#include <fstream>
 
 using namespace std;
 
-struct Data {
-    double a;
+class Data {
+    public:
     long b;
+    double a;
 };
 
 int main() {
-    cout << "Hello CSCI 460" << endl;
-    cout << sizeof(Data) << endl;
+    Data d;
+    d.a=-1.0;
+    d.b=-1;
+    ofstream fout;
+    fout.open("Data.bin");
+    fout.write((char *)&d,sizeof(Data));
+    fout.close();
     return 0;
 }
