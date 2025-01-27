@@ -1,4 +1,4 @@
-PROJ=simple
+PROJ=simple1
 SRC=${PROJ}.cpp
 EXE=${PROJ}.exe
 CFLAGS=-g -pg
