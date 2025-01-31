@@ -14,10 +14,12 @@ class __attribute__ ((packed)) Data {
     int b;
     double a;
     bool c;
+
     void write(ostream &out, long pos){
         //seekp = seek to put some stuff at position(in bytes)
         out.seekp(pos*sizeof(Data));
         out.write(reinterpret_cast<char *>(this), sizeof(Data));
+        out.flush();
     }
     void read(ifstream &in, long pos){
         //seekg = seek to get some stuff from given position(in bytes)
@@ -34,13 +36,22 @@ class __attribute__ ((packed)) Data {
 
 int main() {
     Data d, e;
-    d.a=-1.0;
-    d.b=-1;
-    d.c=true;
+
     ofstream fout;
     ifstream fin;
     fout.open("Data.bin");
+    fin.open("Data.bin");
+
+    d.a=-1.0;
+    d.b=-1;
+    d.c=true;
+
     d.write(fout,0);
+    //need a flush here to make sure data makes it to disk before you read
+    //otherwise computer will wait to write until convenient and info will not be there when you read
+    e.read(fin,0);
+    cout << e;
+
     d.b+=2;
     d.a+=2;
     d.c=true;
@@ -50,9 +61,6 @@ int main() {
         //must read out same block you wrote to to get same value
 
     fout.close();
-    fin.open("Data.bin");
-    e.read(fin,4);
-    cout << e << endl;
     fin.close();
     return 0;
 }
