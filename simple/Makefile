@@ -16,3 +16,10 @@ clean:
 
 run: ${EXE}
 	./${EXE}
+
+check: ${EXE}
+# check for security vulnerabilities
+	cppcheck ${SRC}
+
+lint: ${EXE}
+	cpplint --filter=-whitespace ${SRC}
