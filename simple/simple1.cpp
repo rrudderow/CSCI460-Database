@@ -17,12 +17,12 @@ class __attribute__ ((packed)) Data {
     void write(ostream &out, long pos){
         //seekp = seek to put some stuff at position(in bytes)
         out.seekp(pos*sizeof(Data));
-        out.write((char *)this, sizeof(Data));
+        out.write(reinterpret_cast<char *>(this), sizeof(Data));
     }
     void read(ifstream &in, long pos){
         //seekg = seek to get some stuff from given position(in bytes)
         in.seekg(pos*sizeof(Data));
-        in.read((char *)this, sizeof(Data));
+        in.read(reinterpret_cast<char *>(this), sizeof(Data));
     }
     friend ostream & operator <<(ostream &out, Data &item){
         out << "a: " << item.a << ", b: " << item.b << ", c: ";

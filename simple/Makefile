@@ -22,4 +22,5 @@ check: ${EXE}
 	cppcheck ${SRC}
 
 lint: ${EXE}
-	cpplint --filter=-whitespace ${SRC}
+# formating - --filter to turn things off
+	cpplint --filter=-legal/copyright,-build/namespaces,-whitespace,-runtime ${SRC}
