@@ -15,11 +15,16 @@ class __attribute__ ((packed)) Data {
     double a;
     bool c;
 
+    long getSize(istream &in){
+        in.seekg(0,ios_base::end);
+        return in.tellg()/sizeof(Data);
+    }
     void write(ostream &out, long pos){
         //seekp = seek to put some stuff at position(in bytes)
         out.seekp(pos*sizeof(Data));
         out.write(reinterpret_cast<char *>(this), sizeof(Data));
-        out.flush();
+        out.flush(); //makes computer write to file immediately - instead of waiting
+        //otherwise won't flush until after newline char so need space between write and read
     }
     void read(ifstream &in, long pos){
         //seekg = seek to get some stuff from given position(in bytes)
@@ -56,9 +61,11 @@ int main() {
     d.a+=2;
     d.c=true;
 
+    cout << d.getSize(fin) << endl;
     d.write(fout,4);
     //second parameters of write() is block - 
         //must read out same block you wrote to to get same value
+    cout << d.getSize(fin) << endl;
 
     fout.close();
     fin.close();
