@@ -16,12 +16,13 @@ class __attribute__ ((packed)) DataItems{
     bool c;
 };
 
-const int MAXBYTES=64;
+const int MAXBYTES=32;
 class __attribute__ ((packed)) Data {
     //attributes(packed) makes it so only use as many bytes as you need - instead of 8 bytes for everything
     public:
     DataItems data;
     bool used;
+    long next;
     char gap[MAXBYTES-sizeof(DataItems)-1];
 
     static long getSize(istream &in){
@@ -49,7 +50,7 @@ class __attribute__ ((packed)) Data {
         return out;
     }
 
-    long dataNew(istream &in){
+    static long dataNew(istream &in){
         long n=getSize(in);
         for(long i=0;i<n;i++){
             Data d;
@@ -59,7 +60,7 @@ class __attribute__ ((packed)) Data {
         return n;
     }
 
-    void dataDelete(ostream &out,long pos){
+    static void dataDelete(ostream &out,long pos){
         //doesn't actually delete - just marks space as avaliable for something else
         Data d;
         d.used=false;
@@ -94,6 +95,9 @@ int main() {
     //second parameters of write() is block - 
         //must read out same block you wrote to to get same value
     cout << Data::getSize(fin) << endl;
+    Data::dataDelete(fout,0);
+    long pos=Data::dataNew(fin);
+    cout << "pos: " << pos << endl;
 
     fout.close();
     fin.close();
