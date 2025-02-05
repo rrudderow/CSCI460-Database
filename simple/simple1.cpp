@@ -20,9 +20,14 @@ const int MAXBYTES=32;
 class __attribute__ ((packed)) Data {
     //attributes(packed) makes it so only use as many bytes as you need - instead of 8 bytes for everything
     public:
-    DataItems data;
+    union dataList{
+    //union takes up the same memory location - variables are laying on top of each other
+    //struct makes a memory pattern of the variables, so variables are one right after the otehr
+    //class = struct with members that are functions
+        DataItems data;
+        long next;
+    }
     bool used;
-    long next;
     char gap[MAXBYTES-sizeof(DataItems)-1];
 
     static long getSize(istream &in){

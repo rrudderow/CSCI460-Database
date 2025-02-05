@@ -6,3 +6,4 @@ abstract class = some function virtual, some implemented
 ghex Data.bin = look at binary file
 hexdump Data.bin = shows in terminal
 hexdump Data.bin > check.txt = pipe into file
+why if writing to disk do you not want to use virtual keyword?
