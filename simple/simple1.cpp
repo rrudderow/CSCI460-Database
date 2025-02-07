@@ -17,7 +17,7 @@ class __attribute__ ((packed)) DataItems{
     // char first[20];
     // char last[20];
     // char address[100];
-    friend ostream & operator <<(ostream &out, Data &item){
+    friend ostream & operator <<(ostream &out, DataItems &item){
         out << "a: " << item.a << ", b: " << item.b << ", c: ";
         if(item.c) out << "True" << endl;
         else out << "False" << endl;
@@ -25,19 +25,21 @@ class __attribute__ ((packed)) DataItems{
     }
 };
 
-const int MAXBYTES=32;
-const long FILENULL=0;
-class __attribute__ ((packed)) Data {
-    //attributes(packed) makes it so only use as many bytes as you need - instead of 8 bytes for everything
-    public:
-    union dataList{
+union DataList{
     //union takes up the same memory location - variables are laying on top of each other
     //struct makes a memory pattern of the variables, so variables are one right after the otehr
     //class = struct with members that are functions
         DataItems data;
         long next;
         //null pointer = 0 and can never access
-    }
+    };
+
+const int MAXBYTES=32;
+const long FILENULL=0;
+class __attribute__ ((packed)) Data {
+    //attributes(packed) makes it so only use as many bytes as you need - instead of 8 bytes for everything
+    public:
+    DataList dataList;
     bool used;
     //true if memory block is being used fro data
     //use to determine if using dataitems or the next
@@ -47,6 +49,14 @@ class __attribute__ ((packed)) Data {
     char gap[MAXBYTES-sizeof(DataItems)-1];
     //maxbytes minus size of union minus one for used bool
     //min and max are macros
+
+    Data(DataItems &d) {
+        dataList.data=d;
+    }
+    Data() {
+        used=false;
+        dataList.next=FILENULL;
+    }
 
 
     friend ostream & operator <<(ostream &out, Data &item){
@@ -69,7 +79,10 @@ class __attribute__ ((packed)) Data {
         out.seekp(pos*sizeof(Data));
         if(setUsed) used=true;
         out.write(reinterpret_cast<char *>(this), sizeof(Data));
-        out.flush(); //makes computer write to file immediately - instead of waiting
+        out.flush(); 
+        //need a flush here to make sure data makes it to disk before you read
+        //otherwise computer will wait to write until convenient and info will not be there when you read
+        //makes computer write to file immediately - instead of waiting
         //otherwise won't flush until after newline char so need space between write and read
     }
 
@@ -86,7 +99,7 @@ class __attribute__ ((packed)) Data {
         d.dataList.next=FILENULL;
         ofstream fout;
         fout.open(fname);
-        write(fout,FILENULL,false);
+        d.write(fout,FILENULL,false);
         fout.close();
     }
 
@@ -112,20 +125,35 @@ class __attribute__ ((packed)) Data {
 class Database{
     public:
     fstream file;
-    static void createDB(string fname){
+    static void createDB(string fname){ //
         Data::createDB(fname);
+    }
+    long getSize() {
+        return Data::getSize(file);
     }
     //constructor should open database file and keep the file handle for us
     Database(string fname){
+        ifstream test;
+        test.open(fname);
+        if(!test.good())
+            Database::createDB(fname);
+        else
+            test.close();
         file.open(fname);
     }
-    void write(long pos,Data d){
-        d.write(file,pos,true);
+    void write(long pos,DataItems &d){
+        Data(d).write(file,pos,true);
     }
-    Data read(long pos){
-        Data d;
-        d.read(file,pos);
+    DataItems read(long pos){
+        DataItems d;
+        Data(d).read(file,pos);
         return d;
+    }
+    void dataDelete(long pos){
+        Data::dataDelete(file,pos);
+    }
+    long dataNew(){
+        return Data::dataNew(file);
     }
     ~Database(){
         file.flush();
@@ -134,37 +162,28 @@ class Database{
 };
 
 int main() {
-    Data d, e;
+    DataItems d,e;
+    Database db("Data.bin");
 
-    ofstream fout;
-    ifstream fin;
-    fout.open("Data.bin");
-    fin.open("Data.bin");
+    d.a=-1.0;
+    d.b=-1;
+    d.c=true;
+    db.write(1,d);
+    //second parameters of write() is memory block - 
+    //must read out same block you wrote to to get same value
 
-    d.data.a=-1.0;
-    d.data.b=-1;
-    d.data.c=true;
-
-    d.write(fout,0);
-    //need a flush here to make sure data makes it to disk before you read
-    //otherwise computer will wait to write until convenient and info will not be there when you read
-    e.read(fin,0);
+    e=db.read(1);
     cout << e;
 
-    d.data.b+=2;
-    d.data.a+=2;
-    d.data.c=true;
+    d.a+=2;
+    d.b+=2;
+    d.c=true;
 
-    cout << Data::getSize(fin) << endl;
-    d.write(fout,4);
-    //second parameters of write() is block - 
-        //must read out same block you wrote to to get same value
-    cout << Data::getSize(fin) << endl;
-    Data::dataDelete(fout,0);
-    long pos=Data::dataNew(fin);
-    cout << "pos: " << pos << endl;
+    db.write(4,d);
+    cout << db.getSize() << endl;
+    db.dataDelete(1);
+    long pos=db.dataNew();
+    cout << "Pos of new element: " << pos << endl;
 
-    fout.close();
-    fin.close();
-    return 0;
+    return 0;//
 }
