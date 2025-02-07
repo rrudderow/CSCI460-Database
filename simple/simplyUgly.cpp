@@ -1,8 +1,24 @@
 #include <iostream>
 #include <cstring>
 #include <fstream>
+#include <vector>
 
 using namespace std;
+
+class Field {
+    string name;
+    virtual void read(istream &in)=0;
+    virtual void write(ostream &out)=0;
+    //need virtual bc 
+};
+class Double: public Field {
+
+};
+
+class DataItems {
+    vector<Field *> fields;
+};
+
 /*
 ostream & operator <<(ostream &out, bool &b){
     if(b) return out << "True";
