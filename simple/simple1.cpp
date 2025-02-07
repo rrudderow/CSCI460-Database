@@ -125,7 +125,7 @@ class __attribute__ ((packed)) Data {
 class Database{
     public:
     fstream file;
-    static void createDB(string fname){ //
+    static void createDB(string fname){
         Data::createDB(fname);
     }
     long getSize() {
@@ -145,9 +145,10 @@ class Database{
         Data(d).write(file,pos,true);
     }
     DataItems read(long pos){
-        DataItems d;
-        Data(d).read(file,pos);
-        return d;
+        Data d;
+        d.read(file,pos);
+        return d.dataList.data;
+        //returning something that is on stack - so many not return properly
     }
     void dataDelete(long pos){
         Data::dataDelete(file,pos);
@@ -169,7 +170,7 @@ int main() {
     d.b=-1;
     d.c=true;
     db.write(1,d);
-    //second parameters of write() is memory block - 
+    //first parameter of write() is memory block - 
     //must read out same block you wrote to to get same value
 
     e=db.read(1);
@@ -179,11 +180,11 @@ int main() {
     d.b+=2;
     d.c=true;
 
-    db.write(4,d);
+    db.write(3,d);
     cout << db.getSize() << endl;
-    db.dataDelete(1);
+    db.dataDelete(2);
     long pos=db.dataNew();
     cout << "Pos of new element: " << pos << endl;
 
-    return 0;//
+    return 0;
 }
