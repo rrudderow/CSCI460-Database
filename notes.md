@@ -14,3 +14,8 @@ C - Create Database - all tables should already exist when using
 R - Retrieve = select
 U - Update
 D - Delete
+
+red black tree for every index
+
+insert into second select * from first1 where salary > 20000;
+    tables will not auto update
