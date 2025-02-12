@@ -8,8 +8,6 @@ hexdump Data.bin = shows in terminal
 hexdump Data.bin > check.txt = pipe into file
 why if writing to disk do you not want to use virtual keyword?
 
-
-
 C - Create Database - all tables should already exist when using
 R - Retrieve = select
 U - Update
@@ -19,3 +17,4 @@ red black tree for every index
 
 insert into second select * from first1 where salary > 20000;
     tables will not auto update
+
