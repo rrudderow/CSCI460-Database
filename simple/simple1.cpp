@@ -41,7 +41,7 @@ class __attribute__ ((packed)) Data {
     public:
     DataList dataList;
     bool used;
-    //true if memory block is being used fro data
+    //true if memory block is being used from data
     //use to determine if using dataitems or the next
     //look at it as only one of the two
 

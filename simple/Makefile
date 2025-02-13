@@ -24,3 +24,9 @@ check: ${EXE}
 lint: ${EXE}
 # formating - --filter to turn things off
 	cpplint --filter=-legal/copyright,-build/namespaces,-whitespace,-runtime ${SRC}
+
+linked:
+	g++ ${CFLAGS} linked.cpp -o linked.exe
+
+link_run:
+	./linked.exe
