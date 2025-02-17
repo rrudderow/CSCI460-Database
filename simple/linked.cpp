@@ -23,12 +23,12 @@ public:
     }
 
     // Function to write DataItems to the file at a specific position
-    void write(ostream &out, long pos, bool setUsed = true) {
+    void write(ostream &out, long pos, bool setUsed = true) const {
         out.seekp(pos * sizeof(DataItems));  // Seek to the correct position (in bytes)
         if (setUsed) {
             // Here you can perform any operations when the item is being saved
         }
-        out.write(reinterpret_cast<char *>(this), sizeof(DataItems));  // Write the DataItems to the file
+        out.write(reinterpret_cast<const char *>(this), sizeof(DataItems));  // Write the DataItems to the file
         out.flush();  // Ensure data is written immediately
     }
 
