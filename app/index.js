@@ -8,7 +8,10 @@ const options = {
   root: path.join(__dirname)
 }
 
-const Pool = require('pg').Pool
+const pg = require('pg')
+const {Pool}=pg
+
+//const Pool = require('pg').Pool
 const pool = new Pool({
   user: 'csci460', //don't do this in real life
   host: 'localhost',
