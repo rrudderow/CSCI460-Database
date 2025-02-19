@@ -41,6 +41,8 @@ async function getData() {
       let tag=document.getElementById('salaryTable');
       if (tag) getData(tag)
   }
+
+  
   
   window.addEventListener('load',doLoad);
   

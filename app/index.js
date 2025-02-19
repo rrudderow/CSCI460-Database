@@ -40,8 +40,18 @@ app.get('/script.js',(req, res) => {
 })
 
 app.get('/getData',(req, res) => {
-  res.send()
+  pool.query('SELECT id,first,last,salary FROM first1', (error, results) => {
+    if(error) {
+      throw error
+    }
+    //console.log(results.rows)
+    res.send(JSON.stringify(results.rows))
+  })
 })
+
+let tag=document.getElementById('delete')
+if(tag) tag.addEventListener('click',doDelete)
+window.addEventListener('load',doLoad)
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)

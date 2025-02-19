@@ -38,3 +38,5 @@ SQL AVG function is an example of domain aggregation function - collapse rows va
 In SQL select is used to find records in a table
 A second normal form implies the database has a single column primary key that is independent - unique way of id all info on the row - could be like student ID
 The limit keyword is used to set the number of rows
+
+insert into first1 (id,first,last,salary) values (1,'Karl','Castleton',30000);
