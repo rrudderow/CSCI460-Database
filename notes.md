@@ -40,3 +40,11 @@ A second normal form implies the database has a single column primary key that i
 The limit keyword is used to set the number of rows
 
 insert into first1 (id,first,last,salary) values (1,'Karl','Castleton',30000);
+
+Client                                  Server
+index.html                              index.js
+script.js
+styles.css
+
+Please send
+http://localhost:3000/index.html

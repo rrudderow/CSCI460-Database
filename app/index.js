@@ -39,6 +39,16 @@ app.get('/script.js',(req, res) => {
   res.sendFile('script.js',options)
 })
 
+app.get('/delete', (req, res) => {
+  console.log(req.query.id)
+  pool.query(`delete from first1 where id=${req.query.id}`, (error, results) => {
+    if (error) {
+      throw error
+    }
+    res.send('{"result":"ok"}')
+  })
+})
+
 app.get('/getData',(req, res) => {
   pool.query('SELECT id,first,last,salary FROM first1', (error, results) => {
     if(error) {
@@ -49,9 +59,9 @@ app.get('/getData',(req, res) => {
   })
 })
 
-let tag=document.getElementById('delete')
-if(tag) tag.addEventListener('click',doDelete)
-window.addEventListener('load',doLoad)
+//let tag=document.getElementById('delete')
+//if(tag) tag.addEventListener('click',doDelete)
+//window.addEventListener('load',doLoad)
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)
