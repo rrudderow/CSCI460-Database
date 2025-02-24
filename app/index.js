@@ -13,6 +13,10 @@ const pg = require('pg')
 const {Pool}=pg
 
 //const Pool = require('pg').Pool
+console.log(env.MYAPPUSER);
+console.log(env.MYAPPDB);
+console.log(env.MYAPPPASSWORD);
+
 const pool = new Pool({
   user: env.MYAPPUSER, //use env variables so don't push password and db info to public
   host: 'localhost',
