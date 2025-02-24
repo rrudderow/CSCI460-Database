@@ -1,6 +1,7 @@
 // This is back end code - code run on the server
 const express = require('express')
 const path = require('path')
+const { env } = require('node:process')
 const app = express()
 const port = 3000
 const options = {
@@ -13,10 +14,11 @@ const {Pool}=pg
 
 //const Pool = require('pg').Pool
 const pool = new Pool({
-  user: 'csci460', //don't do this in real life
+  user: env.MYAPPUSER, //use env variables so don't push password and db info to public
   host: 'localhost',
-  database: 'csci460',
-  password: '206Rr153',
+  database: env.MYAPPDB,
+  password: env.MYAPPPASSWORD,
+  port: 5432,
 })
 
 pool.query('SELECT id,first,last,salary FROM first1', (error, results) => {
