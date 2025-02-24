@@ -6,7 +6,7 @@ const app = express()
 const port = 3000
 const options = {
   //attributes: values - json notation
-  root: path.join(__dirname)
+  root: path.join(__dirname),
 }
 
 const pg = require('pg')

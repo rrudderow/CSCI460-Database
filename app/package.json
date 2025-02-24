@@ -1,19 +1,15 @@
 {
-  "name": "simple",
+  "name": "app",
   "version": "1.0.0",
-  "description": "A simple CRUD server for names and salaries",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "Renee Rudderow",
+  "author": "Renee",
   "license": "ISC",
+  "description": "",
   "dependencies": {
-    "dotenv": "^16.4.7",
     "express": "^4.21.2",
-    "node": "^18.20.7",
-    "path": "^0.12.7",
-    "pg": "^8.13.3",
-    "process": "^0.11.10"
+    "pg": "^8.13.3"
   }
 }
