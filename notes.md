@@ -48,3 +48,9 @@ styles.css
 
 Please send
 http://localhost:3000/index.html
+
+got to ~ folder
+nano .profile
+export VARI = "vari"
+now can use env.VARI to access variable
+use for password and such

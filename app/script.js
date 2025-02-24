@@ -4,6 +4,7 @@
 function getData(tag) {
   fetch("/getData").then((response)=>{
     response.json().then((obj)=>{
+      tag.innerHTML=''
         obj.forEach((d)=>{
           tag.innerHTML+=`<tr><td>${d.id}</td><td>${d.first}</td><td>${d.last}</td><td>${d.salary}</td></tr>`
       })
@@ -14,11 +15,10 @@ function getData(tag) {
 function serverDelete(x) {
   fetch(`/delete?id=${x}`).then((response)=>{
     response.json().then((obj)=>{
-        obj.forEach((d)=>{
-      })
+        doLoad()
     })
-  })
-}
+    })
+  }
 
 function doLoad() {
     let tag=document.getElementById('delete')

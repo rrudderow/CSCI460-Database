@@ -9,8 +9,11 @@
   "author": "Renee Rudderow",
   "license": "ISC",
   "dependencies": {
+    "dotenv": "^16.4.7",
     "express": "^4.21.2",
+    "node": "^18.20.7",
     "path": "^0.12.7",
-    "pg": "^8.13.3"
+    "pg": "^8.13.3",
+    "process": "^0.11.10"
   }
 }

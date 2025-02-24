@@ -43,7 +43,8 @@ app.get('/script.js',(req, res) => {
 
 app.get('/delete', (req, res) => {
   console.log(req.query.id)
-  pool.query(`delete from first1 where id=${req.query.id}`, (error, results) => {
+  let cleanID=parseInt(req.query.id) //sanitizing the input - on server side
+  pool.query(`delete from first1 where id=${cleanID}`, (error, results) => {
     if (error) {
       throw error
     }
