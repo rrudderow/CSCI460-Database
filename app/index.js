@@ -68,6 +68,21 @@ app.get('/create', (req, res) => {
   })
 })
 
+app.get('/update', (req, res) => {
+  let id=parseInt(req.query.id) //sanitizing the input - on server side
+  let salary=""
+  if(req.query.salary) salary=parseInt(req.query.salary)
+
+  let first=req.query.first.replace(/[;:{}=*%$]/g,"")
+  let last=req.query.last.replace(/[;:{}=*%$]/g,"")
+  pool.query(`update first1 set salary=${salary}, first=${first}, last=${last} where id=${id}`, (error, results) => {
+    if (error) {
+      throw error
+    }
+    res.send('{"result":"ok"}')
+  })
+})
+
 app.get('/getData',(req, res) => {
   pool.query('SELECT id,first,last,salary FROM first1', (error, results) => {
     if(error) {
