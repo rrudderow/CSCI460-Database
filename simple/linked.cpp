@@ -1,124 +1,224 @@
 #include <iostream>
+#include <cstring>
+#include <fstream>
 using namespace std;
 
-// DataItems class definition (as provided)
-class __attribute__ ((packed)) DataItems {
-public:
+struct Node {
+    int data;  
+    Node* next; 
+};
+
+class LinkedList {
+    Node* head; //pointer to the first node
+    public:
+    LinkedList() {
+        head = nullptr;
+    }
+
+    void insertLL(int value) {
+        Node* newNode = new Node(); 
+        newNode->data = value;      
+        newNode->next = head;      
+        head = newNode;            
+    }
+
+    void insertAll(long n) {
+        for (int i = 1; i <= n; ++i) {
+            insertLL(i);
+        }
+    }
+
+    int getFirst() {
+    if (head == nullptr) {
+        cout << "List is empty." << endl;
+        return -1;  // Returning -1 to indicate that the list is empty
+    }
+    return head->data;
+    }
+
+    void deleteLL() {
+        if (!head) {
+            cout << "List is empty." << endl;
+            return;
+        }
+
+        Node* temp = head; 
+        head = head->next; 
+        delete temp;      
+    }
+
+    void display() {
+        if (!head) {
+            cout << "List is empty." << endl;
+            return;
+        }
+
+        Node* temp = head;
+        while (temp) {
+            cout << temp->data << " -> "; 
+            temp = temp->next;
+        }
+        cout << "NULL" << endl; 
+    }
+};
+
+
+class __attribute__ ((packed)) DataItems{
+    public:
     int b;
     double a;
     bool c;
 
-    friend ostream & operator <<(ostream &out, DataItems &item) {
+    friend ostream & operator <<(ostream &out, DataItems &item){
         out << "a: " << item.a << ", b: " << item.b << ", c: ";
-        if (item.c) out << "True" << endl;
+        if(item.c) out << "True" << endl;
         else out << "False" << endl;
         return out;
     }
 };
 
-// Node structure to represent each element in the list
-struct Node {
-    DataItems data;  // Data held by the node (an instance of DataItems)
-    Node* next;      // Pointer to the next node
-
-    // Constructor to initialize a new node with DataItems
-    Node(DataItems val) : data(val), next(nullptr) {}
+union DataList{
+        DataItems data;
+        long next;
 };
 
-// LinkedList class with basic operations
-class LinkedList {
-private:
-    Node* head;  // Pointer to the first node in the list
+const int MAXBYTES=32;
+const long FILENULL=0;
 
-public:
-    // Constructor initializes an empty list
-    LinkedList() : head(nullptr) {}
 
-    // Destructor to delete the entire list
-    ~LinkedList() {
-        Node* current = head;
-        while (current != nullptr) {
-            Node* nextNode = current->next;
-            delete current;
-            current = nextNode;
-        }
+class __attribute__ ((packed)) Data {
+    public:
+    DataList dataList;
+    bool used;
+
+    char gap[MAXBYTES-sizeof(DataItems)-1];
+
+    Data(DataItems &d) {
+        dataList.data=d;
+    }
+    Data() {
+        used=false;
+        dataList.next=FILENULL;
     }
 
-    // Function to insert a node at the end of the list
-    void insertEnd(DataItems val) {
-        Node* newNode = new Node(val);
-        if (head == nullptr) {
-            head = newNode;
-        } else {
-            Node* current = head;
-            while (current->next != nullptr) {
-                current = current->next;
-            }
-            current->next = newNode;
-        }
+
+    friend ostream & operator <<(ostream &out, Data &item){
+        if(item.used)
+            out << "Data Node: " << item.dataList.data << endl;
+        else
+            out << "Link List Node: " << item.dataList.next << endl;
+        return out;
     }
 
-    // Function to delete the first occurrence of a DataItems object
-    void deleteValue(DataItems val) {
-        if (head == nullptr) return;
-
-        // If the head is the node to delete
-        if (head->data.b == val.b && head->data.a == val.a && head->data.c == val.c) {
-            Node* temp = head;
-            head = head->next;
-            delete temp;
-            return;
-        }
-
-        // Traverse the list to find and delete the node
-        Node* current = head;
-        while (current->next != nullptr) {
-            if (current->next->data.b == val.b && current->next->data.a == val.a && current->next->data.c == val.c) {
-                Node* temp = current->next;
-                current->next = current->next->next;
-                delete temp;
-                return;
-            }
-            current = current->next;
-        }
+    static long getSize(istream &in){
+        in.seekg(0,ios_base::end);
+        return in.tellg()/sizeof(Data)-1;
     }
 
-    // Function to display the entire list
-    void display() const {
-        Node* current = head;
-        while (current != nullptr) {
-            cout << current->data;  // Use the overloaded << operator for DataItems
-            current = current->next;
-        }
+    void write(ostream &out, long pos, bool setUsed=true){
+        out.seekp(pos*sizeof(Data));
+        if(setUsed) used=true;
+        out.write(reinterpret_cast<char *>(this), sizeof(Data));
+        out.flush(); 
     }
 
-    // Function to check if the list is empty
-    bool isEmpty() const {
-        return head == nullptr;
+    void read(istream &in, long pos){
+        in.seekg(pos*sizeof(Data));
+        in.read(reinterpret_cast<char *>(this), sizeof(Data));
+    }
+
+    static void createDB(string fname){
+        Data d;
+        d.used=false;
+        d.dataList.next=FILENULL;
+        ofstream fout;
+        fout.open(fname);
+        d.write(fout,FILENULL,false);
+        fout.close();
+    }
+
+    static long dataNew(istream &in){
+        // long n=getSize(in);
+        // for(long i=0;i<n;i++){
+        //     Data d;
+        //     d.read(in,i);
+        //     if(d.used==false) return i;
+        // }
+         return -2;
+    }
+
+    static void dataDelete(ostream &out,long pos){
+        Data d;
+        d.used=false;
+        d.write(out,pos,false);
+    }
+};
+
+class Database{
+    public:
+    fstream file;
+    LinkedList ll;
+    static void createDB(string fname){
+        Data::createDB(fname);
+    }
+    long getSize() {
+        return Data::getSize(file);
+    }
+
+    Database(string fname){
+        ifstream test;
+        test.open(fname);
+        if(!test.good())
+            Database::createDB(fname);
+        else
+            test.close();
+        file.open(fname);
+        ll.insertAll(getSize());
+    }
+    void write(long pos,DataItems &d){
+        Data(d).write(file,pos,true);
+    }
+    DataItems read(long pos){
+        Data d;
+        d.read(file,pos);
+        return d.dataList.data;
+    }
+    void dataDelete(long pos){
+        ll.insertLL(pos);
+    }
+    long dataNew(){
+        int n = ll.getFirst();
+        ll.deleteLL();
+        return n;
+    }
+    ~Database(){
+        file.flush();
+        file.close();
     }
 };
 
 int main() {
-    LinkedList list;
+    DataItems d,e;
+    Database db("Data.bin");
 
-    // Create DataItems instances
-    DataItems d1 = {10, 20.5, true};
-    DataItems d2 = {20, 30.7, false};
-    DataItems d3 = {30, 40.8, true};
+    d.a=-1.0;
+    d.b=-1;
+    d.c=true;
+    db.write(1,d);
 
-    // Insert DataItems into the linked list
-    list.insertEnd(d1);
-    list.insertEnd(d2);
-    list.insertEnd(d3);
+    e=db.read(1);
+    cout << e;
 
-    cout << "List after insertion: " << endl;
-    list.display();  // Display the list
+    d.a+=2;
+    d.b+=2;
+    d.c=true;
 
-    // Deleting a DataItems from the list
-    list.deleteValue(d2);  // Delete the second DataItems
-
-    cout << "\nList after deleting d2: " << endl;
-    list.display();  // Display the list after deletion
+    db.write(3,d);
+    cout << db.getSize() << endl;
+    db.dataDelete(1);
+    //so now dataNew will return pos one - or whatever is passed into dataDelete bc mem now avaliable
+    long pos=db.dataNew();
+    cout << "Pos of new element: " << pos << endl;
 
     return 0;
 }
