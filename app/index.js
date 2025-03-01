@@ -1,101 +1,102 @@
-// This is back end code - code run on the server
-const express = require('express')
-const path = require('path')
-const { env } = require('node:process')
+/* This is Back-End Code */
+/* This Code runs on the Server */
+
+const express = require('express');
+const path = require('path');
 const app = express()
+const { env } = require('node:process');
 const port = 3000
 const options = {
-  //attributes: values - json notation
-  root: path.join(__dirname),
-}
+  root: path.join(__dirname)
+};
 
 const pg = require('pg')
 const {Pool}=pg
 
-//const Pool = require('pg').Pool
-console.log(env.MYAPPUSER);
-console.log(env.MYAPPDB);
-console.log(env.MYAPPPASSWORD);
-
 const pool = new Pool({
-  user: env.MYAPPUSER, //use env variables so don't push password and db info to public
+  user: env.MYAPPUSER,  // Do this in real life
   host: 'localhost',
   database: env.MYAPPDB,
   password: env.MYAPPPASSWORD,
   port: 5432,
-})
+}) 
 
-pool.query('SELECT id,first,last,salary FROM first1', (error, results) => {
-  if(error) {
-    throw error
+async function checkAPIKey(req){
+  if (req.query.apikey){
+    let response;
+    let cleanKey=parseInt(req.query.apikey);
+    try {
+      response = await pool.query(`select from activeusers where apikey=${cleanKey}`);
+    } catch (error) {
+      throw error;
+    }
+    return response.rowCount==1;
   }
-  console.log(results.rows)
-})
+  return false;
+}
 
 app.get('/index.html', (req, res) => {
-  res.sendFile('index.html',options)
-  //console.log(req)
+  res.sendFile('index.html',options);
 })
-
-app.get('/styles.css',(req, res) => {
-  res.sendFile('styles.css',options)
+app.get('/styles.css', (req, res) => {
+  res.sendFile('styles.css',options);
 })
-
-app.get('/script.js',(req, res) => {
-  res.sendFile('script.js',options)
+app.get('/script.js', (req, res) => {
+  res.sendFile('script.js',options);
 })
-
-app.get('/delete', (req, res) => {
-  console.log(req.query.id)
-  let cleanID=parseInt(req.query.id) //sanitizing the input - on server side
-  pool.query(`delete from first1 where id=${cleanID}`, (error, results) => {
-    if (error) {
-      throw error
-    }
-    res.send('{"result":"ok"}')
+app.get('/delete',(req,res)=>{
+  if (!checkAPIKey(req)) {
+    res.send(`{"result":"badkey"}`);
+    return;
+  }
+  console.log(req.query.id);
+  let cleanId=parseInt(req.query.id);
+  pool.query(`delete from first1 where id=${cleanId}`,(error,result)=>{
+    res.send('{"result":"ok"}');
   })
 })
-
-app.get('/create', (req, res) => {
-  let salary=parseInt(req.query.salary) //sanitizing the input - on server side
-  let first=req.query.first.replace(/[;:{}=*%$]/g,"")
-  let last=req.query.last.replace(/[;:{}=*%$]/g,"")
-  pool.query(`insert into first1 (first,last,salary) values ('${first}','${last}','${salary}')`, (error, results) => {
-    if (error) {
-      throw error
-    }
-    res.send('{"result":"ok"}')
+app.get('/create',(req,res)=>{
+  let salary=parseInt(req.query.salary);
+  let first=req.query.first.replace(/[;:{}=]/g,"");
+  let last=req.query.last.replace(/[;:{}=]/g,"");
+  pool.query(`insert into first1 (first,last,salary) values ('${first}','${last}',${salary})`,(error,result)=>{
+    res.send('{"result":"ok"}');
+  })
+}) 
+app.get('/update',(req,res)=>{
+  let id=parseInt(req.query.id);
+  let salary="";
+  let comma="";
+  if (req.query.salary) {
+    salary=parseInt(req.query.salary);
+    salary=`${comma}salary=${salary}`;
+    comma=",";
+  }
+  let first="";
+  if (req.query.first){
+    first=req.query.first.replace(/[;:{}=]/g,"");
+    first=`${comma}first='${first}'`;
+    comma=",";
+  }
+  let last="";
+  if (req.query.last){
+    last=req.query.last.replace(/[;:{}=]/g,"");
+    last=`${comma}last='${last}'`;
+    comma=",";
+  }
+  pool.query(`update first1 set ${salary}${first}${last} where id=${id}`,(error,result)=>{
+    console.log(result);
+    res.send(`{"result":"ok"}`);
   })
 })
-
-app.get('/update', (req, res) => {
-  let id=parseInt(req.query.id) //sanitizing the input - on server side
-  let salary=""
-  if(req.query.salary) salary=parseInt(req.query.salary)
-
-  let first=req.query.first.replace(/[;:{}=*%$]/g,"")
-  let last=req.query.last.replace(/[;:{}=*%$]/g,"")
-  pool.query(`update first1 set salary=${salary}, first=${first}, last=${last} where id=${id}`, (error, results) => {
-    if (error) {
-      throw error
-    }
-    res.send('{"result":"ok"}')
-  })
-})
-
 app.get('/getData',(req, res) => {
   pool.query('SELECT id,first,last,salary FROM first1', (error, results) => {
-    if(error) {
+    if (error) {
       throw error
     }
-    //console.log(results.rows)
-    res.send(JSON.stringify(results.rows))
+    res.send(JSON.stringify(results.rows));
   })
 })
-
-//let tag=document.getElementById('delete')
-//if(tag) tag.addEventListener('click',doDelete)
-//window.addEventListener('load',doLoad)
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)

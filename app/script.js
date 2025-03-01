@@ -13,13 +13,12 @@ function getData(tag) {
 }
 
 function serverDelete(x){
-  fetch(`/delete?id=${x}`).then((response)=>{
+  fetch(`/delete?id=${x}&apikey=11301`).then((response)=>{
     response.json().then((obj)=>{
       doLoad();
     })
   })
 }
-
 function serverCreate(first,last,salary){
   fetch(`/create?first=${first}&last=${last}&salary=${salary}`).then((response)=>{
     response.json().then((obj)=>{
@@ -27,12 +26,11 @@ function serverCreate(first,last,salary){
     })
   })
 }
-
 function serverUpdate(id,first,last,salary){
-  if (first.length>0) first=`first=${first}&`
-  if (last.length>0) last=`last=${last}&`
-  if (salary.length>0) salary=`salary=${salary}&`
-  if (salary.length==0 && first.length==0 && last.length==0) return
+  if (first.length>0) first=`first=${first}&`;
+  if (last.length>0) last=`last=${last}&`;
+  if (salary.length>0) salary=`salary=${salary}&`;
+  if (salary.length==0 && first.length==0 && last.length==0) return;
   fetch(`/update?${first}${last}${salary}id=${id}`).then((response)=>{
     response.json().then((obj)=>{
       doLoad();
@@ -51,39 +49,39 @@ function doLoad() {
     if (tag) getData(tag);
 }
 
-function doCreate() {
-  let first=""
-  let last=""
-  let salary=""
-  let tag=document.getElementById('first')
-  if (tag) first=tag.value
-  tag=document.getElementById('last')
-  if (tag) last=tag.value
-  tag=document.getElementById('salary')
-  if (tag) salary=tag.value
-  serverCreate(first,last,salary)
-}
-
-function doUpdate() {
-  let id=""
-  let first=""
-  let last=""
-  let salary=""
-  let tag=document.getElementById('update_id')
-  if (tag) id=tag.value
-  tag=document.getElementById('update_first')
-  if (tag) first=tag.value
-  tag=document.getElementById('update_last')
-  if (tag) last=tag.value
-  tag=document.getElementById('update_salary')
-  if (tag) salary=tag.value
-  serverUpdate(id,first,last,salary)
-}
-
 function doDelete() {
   let tag=document.getElementById('accountId');
   if (tag) serverDelete(tag.value);
 }
 
-window.addEventListener('load',doLoad);
+function doUpdate(){
+  let id="";
+  let first="";
+  let last="";
+  let salary="";
+  let tag=document.getElementById('update_id');
+  if (tag) id=tag.value;
+  tag=document.getElementById('update_first');
+  if (tag) first=tag.value;
+  tag=document.getElementById('update_last');
+  if (tag) last=tag.value;
+  tag=document.getElementById('update_salary');
+  if (tag) salary=tag.value;
+  serverUpdate(id,first,last,salary);
+}
 
+function doCreate(){
+  let first="";
+  let last="";
+  let salary="";
+  let tag=document.getElementById('first');
+  if (tag) first=tag.value;
+  tag=document.getElementById('last');
+  if (tag) last=tag.value;
+  tag=document.getElementById('salary');
+  if (tag) salary=tag.value;
+  serverCreate(first,last,salary);
+}
+
+
+window.addEventListener('load',doLoad);
