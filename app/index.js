@@ -23,16 +23,10 @@ const pool = new Pool({
 
 async function checkAPIKey(req){
   if (req.query.apikey){
-    let response;
     let cleanKey=parseInt(req.query.apikey);
-    try {
-      response = await pool.query(`select from activeusers where apikey=${cleanKey}`);
-    } catch (error) {
-      throw error;
-    }
-    return response.rowCount==1;
-  }
-  return false;
+    response=await pool.query(`select from activeusers where apikey=${cleanKey}`);
+    return response.rowCount==1; 
+  } else return false;
 }
 
 app.get('/index.html', (req, res) => {
@@ -44,58 +38,70 @@ app.get('/styles.css', (req, res) => {
 app.get('/script.js', (req, res) => {
   res.sendFile('script.js',options);
 })
-app.get('/delete',(req,res)=>{
-  if (!checkAPIKey(req)) {
+
+app.get('/delete',async (req,res)=>{
+  if (! await checkAPIKey(req))
     res.send(`{"result":"badkey"}`);
-    return;
+  else {
+    let cleanId=parseInt(req.query.id);
+    pool.query(`delete from first1 where id=${cleanId}`,(error,result)=>{
+      res.send('{"result":"ok"}');
+    })
   }
-  console.log(req.query.id);
-  let cleanId=parseInt(req.query.id);
-  pool.query(`delete from first1 where id=${cleanId}`,(error,result)=>{
-    res.send('{"result":"ok"}');
-  })
 })
-app.get('/create',(req,res)=>{
-  let salary=parseInt(req.query.salary);
-  let first=req.query.first.replace(/[;:{}=]/g,"");
-  let last=req.query.last.replace(/[;:{}=]/g,"");
-  pool.query(`insert into first1 (first,last,salary) values ('${first}','${last}',${salary})`,(error,result)=>{
-    res.send('{"result":"ok"}');
-  })
+
+app.get('/create',async (req,res)=>{
+  if (! await checkAPIKey(req))
+    res.send(`{"result":"badkey"}`);
+  else {
+    let salary=parseInt(req.query.salary);
+    let first=req.query.first.replace(/[;:{}=]/g,"");
+    let last=req.query.last.replace(/[;:{}=]/g,"");
+    pool.query(`insert into first1 (first,last,salary) values ('${first}','${last}',${salary})`,(error,result)=>{
+      res.send('{"result":"ok"}');
+    })
+  }
 }) 
-app.get('/update',(req,res)=>{
-  let id=parseInt(req.query.id);
-  let salary="";
-  let comma="";
-  if (req.query.salary) {
-    salary=parseInt(req.query.salary);
-    salary=`${comma}salary=${salary}`;
-    comma=",";
-  }
-  let first="";
-  if (req.query.first){
-    first=req.query.first.replace(/[;:{}=]/g,"");
-    first=`${comma}first='${first}'`;
-    comma=",";
-  }
-  let last="";
-  if (req.query.last){
-    last=req.query.last.replace(/[;:{}=]/g,"");
-    last=`${comma}last='${last}'`;
-    comma=",";
-  }
-  pool.query(`update first1 set ${salary}${first}${last} where id=${id}`,(error,result)=>{
-    console.log(result);
-    res.send(`{"result":"ok"}`);
-  })
-})
-app.get('/getData',(req, res) => {
-  pool.query('SELECT id,first,last,salary FROM first1', (error, results) => {
-    if (error) {
-      throw error
+
+app.get('/update',async (req,res)=>{
+  if (! await checkAPIKey(req))
+    res.send(`{"result":"badkey"}`);
+  else {
+    let id=parseInt(req.query.id);
+    let salary="";
+    let comma="";
+    if (req.query.salary) {
+      salary=parseInt(req.query.salary);
+      salary=`${comma}salary=${salary}`;
+      comma=",";
     }
+    let first="";
+    if (req.query.first){
+      first=req.query.first.replace(/[;:{}=]/g,"");
+      first=`${comma}first='${first}'`;
+      comma=",";
+    }
+    let last="";
+    if (req.query.last){
+      last=req.query.last.replace(/[;:{}=]/g,"");
+      last=`${comma}last='${last}'`;
+      comma=",";
+    }
+    pool.query(`update first1 set ${salary}${first}${last} where id=${id}`,(error,result)=>{
+      console.log(result);
+      res.send(`{"result":"ok"}`);
+    })
+  }
+})
+app.get('/getData',async (req, res) => {
+  if (! await checkAPIKey(req))
+    res.send(`[]`);
+  else {
+    pool.query('SELECT id,first,last,salary FROM first1', (error, results) => {
+    if (error) throw error
     res.send(JSON.stringify(results.rows));
   })
+  }
 })
 
 app.listen(port, () => {

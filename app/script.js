@@ -1,8 +1,19 @@
 /* This is Front-End Code */
 /* Code run in the browser */
 
+var apikey=0;
+
+function login() { 
+  apikey=11301;
+  doLoad(); 
+}
+function logout() {
+  apikey=0;
+  doLoad();
+}
+
 function getData(tag) {
-  fetch("/getData").then((response)=>{
+  fetch(`/getData?apikey=${apikey}`).then((response)=>{
     response.json().then((obj)=>{
         tag.innerHTML='';
         obj.forEach((d)=>{
@@ -13,14 +24,14 @@ function getData(tag) {
 }
 
 function serverDelete(x){
-  fetch(`/delete?id=${x}&apikey=11301`).then((response)=>{
+  fetch(`/delete?id=${x}&apikey=${apikey}`).then((response)=>{
     response.json().then((obj)=>{
       doLoad();
     })
   })
 }
 function serverCreate(first,last,salary){
-  fetch(`/create?first=${first}&last=${last}&salary=${salary}`).then((response)=>{
+  fetch(`/create?first=${first}&last=${last}&salary=${salary}&apikey=${apikey}`).then((response)=>{
     response.json().then((obj)=>{
       doLoad();
     })
@@ -31,7 +42,7 @@ function serverUpdate(id,first,last,salary){
   if (last.length>0) last=`last=${last}&`;
   if (salary.length>0) salary=`salary=${salary}&`;
   if (salary.length==0 && first.length==0 && last.length==0) return;
-  fetch(`/update?${first}${last}${salary}id=${id}`).then((response)=>{
+  fetch(`/update?${first}${last}${salary}id=${id}&apikey=${apikey}`).then((response)=>{
     response.json().then((obj)=>{
       doLoad();
     })
@@ -45,6 +56,10 @@ function doLoad() {
     if (tag) tag.addEventListener('click',doCreate)
     tag=document.getElementById('update');
     if (tag) tag.addEventListener('click',doUpdate)
+    tag=document.getElementById('login');
+    if (tag) tag.addEventListener('click',login)
+    tag=document.getElementById('logout');
+    if (tag) tag.addEventListener('click',logout)    
     tag=document.getElementById('salaryTable');
     if (tag) getData(tag);
 }
