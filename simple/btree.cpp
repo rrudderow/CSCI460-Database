@@ -58,11 +58,15 @@ void remove(char *Name,int current=ROOTNODE){
             remove(Name,Nodes[current].right);
     } else { //found the node to remove
         if (Nodes[current].right==NODENULL) //happy
-            //keep the Nodes[current].left
+            int pos=Nodes[current].left;
+            Nodes[current]=Nodes[pos];
+            Nodes[pos].used=false;
         else if (Nodes[current].left==NODENULL) //happy
-            //keep the Nodes[current].right
+            int pos=Nodes[current].right;
+            Nodes[current]=Nodes[pos];
+            Nodes[pos].used=false;
         else { //sad bc work
-            
+
         }
         Nodes[current].used=false;
     }
