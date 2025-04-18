@@ -3,5 +3,5 @@ ${EXE}.exe : ${EXE}.cpp
 	g++ $< -o $@
 
 run: ${EXE}.exe
-	./${EXE}.exe train > trainData.sql 
+	./${EXE}.exe t10k > trainData.sql 
 #use > trainData.sql to redirect couts to trainData.sql instead

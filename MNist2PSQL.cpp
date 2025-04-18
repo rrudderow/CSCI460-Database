@@ -58,7 +58,7 @@ int main(int argc,char **argv){
         cout << "CREATE TABLE " << argv[1] << " (label char,image vector[" << hidx3.rows*hidx3.cols << "])" << endl;
         //insert into images (label,image) values ('0','[1,2,........3]'), ('1','[4,5,.........6]');
         cout << "insert into " << argv[1] << " (label,image) values ";
-        for (int i=0;i<10/*hidx1.count*/;i++){
+        for (int i=0;i<hidx1.count;i++){
             Image img;
             uint8_t label;
             idx1.read((char *)&label,sizeof(uint8_t));
